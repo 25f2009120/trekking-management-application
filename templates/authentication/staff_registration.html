@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Staff Registration</h2>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Priyank Rajeshkumar Chapadiya"
+            required>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="example@123.com"
+            required>
+
+        <input
+            type="number"
+            name="phone"
+            placeholder="+91 00000 00000"
+            required>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required>
+
+        <input
+            type="password"
+            name="confirm_password"
+            placeholder="Confirm Password"
+            required>
+
+        <button type="submit">
+            Register
+        </button>
+
+    </form>
+
+    <p>Wait for approval</p>
+
+</div>
+
+{% endblock %}

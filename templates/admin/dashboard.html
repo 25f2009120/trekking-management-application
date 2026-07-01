@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h1>Admin Dashboard</h1>
+
+    <p>Welcome, {{user.name}}!</p>
+
+    <hr>
+
+    <h3>Admin Actions</h3>
+
+    <ul>
+        <li>Add Trek</li>
+        <li>View All Trek</li>
+        <li>View All Users</li>
+        <li>View All Bookings</li>
+        <li>
+            <a href="{{ url_for('staff_approvals') }}">Staff Approvals</a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin_users') }}">View All Users</a>
+        </li>
+    </ul>
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</div>
+
+{% endblock %}

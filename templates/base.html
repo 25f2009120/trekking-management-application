@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trekking Management</title>
+</head>
+<body>
+<nav>
+    <a href="{{url_for('index')}}">Home</a>
+
+    {% if session.get("user_id") %}
+
+        <a href="{{url_for('logout')}}">Logout</a>
+
+    {% else %}
+
+        <a href="{{url_for('login')}}">Login</a>
+
+        <a href="{{url_for('user_register')}}">User Registration</a>
+
+        <a href="{{url_for('staff_register')}}">Staff Registration</a>
+
+    {% endif %}
+</nav>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

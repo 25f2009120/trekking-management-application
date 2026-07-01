@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h1>User Dashboard</h1>
+
+    <p>Welcome, {{user.name}}!</p>
+
+    <hr>
+
+    <h3>User Actions</h3>
+
+    <ul>
+        <li>View All Bookings</li>
+        <li>View New Treks</li>
+    </ul>
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</div>
+
+{% endblock %}

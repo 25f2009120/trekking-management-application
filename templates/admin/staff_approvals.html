@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Staff Approvals</h2>
+
+    {% if unapproved_staff %}
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Action</th>
+            </tr>
+
+            {% for staff in unapproved_staff %}
+
+            <tr>
+                <td>{{ staff.name }}</td>
+                <td>{{ staff.email }}</td>
+                <td>{{ staff.phone }}</td>
+                <td>
+                    <a href="{{ url_for('approve_staff', user_id=staff.id) }}">Approve</a>
+                </td>
+            </tr>
+
+            {% endfor %}
+        </table>
+
+    {% else %}
+
+    <p>No requests to approve.</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}
