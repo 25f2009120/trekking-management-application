@@ -163,6 +163,56 @@ def approve_staff(user_id):
 
     return redirect(url_for("staff_approvals"))
 
+@app.route("/admin/staff")
+def admin_staff():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("login"))
+
+    staff = User.query.filter_by(role="staff").all()
+
+    return render_template("admin/staff.html", staff=staff)
+
+@app.route("/admin/blacklist-staff/<int:user_id>")
+def blacklist_staff(user_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("login"))
+
+    staff = User.query.get(user_id)
+
+    if staff:
+        staff.is_blacklisted = True
+        db.session.commit()
+        flash("Staff blacklisted")
+    else:
+        flash("Staff not found")
+
+    return redirect(url_for("admin_staff"))
+
+@app.route("/admin/unblacklist-staff/<int:user_id>")
+def unblacklist_staff(user_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("login"))
+
+    staff = User.query.get(user_id)
+
+    if staff:
+        staff.is_blacklisted = False
+        db.session.commit()
+        flash("Staff unblacklisted")
+    else:
+        flash("Staff not found")
+
+    return redirect(url_for("admin_staff"))
+
 @app.route("/admin/users")
 def admin_users():
     if "user_id" not in session:
@@ -171,7 +221,7 @@ def admin_users():
     if session["role"] != "admin":
         return redirect(url_for("login"))
 
-    uses = User.query.filter_by(role="user").all()
+    users = User.query.filter_by(role="user").all()
 
     return render_template("admin/users.html", users=users)
 

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>All Staff</h2>
+
+    {% if staff %}
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Approval</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            {% for s in staff %}
+
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.email }}</td>
+                <td>{{ s.phone }}</td>
+                <td>
+                    {% if s.is_approved %}
+                        Approved
+                    {% else %}
+                        Not Approved
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.is_blacklisted %}
+                        Blacklisted
+                    {% else %}
+                        Not Blacklisted
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.is_blacklisted %}
+                        <a href="{{ url_for('unblacklist_staff', user_id=s.id) }}">Unblacklist</a>
+                    {% else %}
+                        <a href="{{ url_for('blacklist_staff', user_id=s.id) }}">Blacklist</a>
+                    {% endif %}
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>No staff to blacklist.</p>
+
+    {% endif %}
+
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}
