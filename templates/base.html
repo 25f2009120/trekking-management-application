@@ -7,19 +7,19 @@
 </head>
 <body>
 <nav>
-    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('authentication.index')}}">Home</a>
 
     {% if session.get("user_id") %}
 
-        <a href="{{url_for('logout')}}">Logout</a>
+        <a href="{{url_for('authentication.logout')}}">Logout</a>
 
     {% else %}
 
-        <a href="{{url_for('login')}}">Login</a>
+        <a href="{{url_for('authentication.login')}}">Login</a>
 
-        <a href="{{url_for('user_register')}}">User Registration</a>
+        <a href="{{url_for('authentication.user_register')}}">User Registration</a>
 
-        <a href="{{url_for('staff_register')}}">Staff Registration</a>
+        <a href="{{url_for('authentication.staff_register')}}">Staff Registration</a>
 
     {% endif %}
 </nav>

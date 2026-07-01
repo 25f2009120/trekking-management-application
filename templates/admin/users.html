@@ -32,9 +32,9 @@
                 </td>
                 <td>
                     {% if user.is_blacklisted %}
-                        <a href="{{ url_for('unblacklist_user', user_id=user.id) }}">Unblacklist</a>
+                        <a href="{{ url_for('admin.unblacklist_user', user_id=user.id) }}">Unblacklist</a>
                     {% else %}
-                        <a href="{{ url_for('blacklist_user', user_id=user.id) }}">Blacklist</a>
+                        <a href="{{ url_for('admin.blacklist_user', user_id=user.id) }}">Blacklist</a>
                     {% endif %}
                 </td>
             </tr>
@@ -49,7 +49,7 @@
 
     {% endif %}
 
-        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
 
 </div>
 

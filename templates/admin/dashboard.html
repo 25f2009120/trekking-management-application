@@ -18,17 +18,17 @@
         <li>View All Users</li>
         <li>View All Bookings</li>
         <li>
-            <a href="{{ url_for('staff_approvals') }}">Staff Approvals</a>
+            <a href="{{ url_for('admin.staff_approvals') }}">Staff Approvals</a>
         </li>
         <li>
-            <a href="{{ url_for('admin_users') }}">View All Users</a>
+            <a href="{{ url_for('admin.admin_users') }}">View All Users</a>
         </li>
         <li>
-            <a href="{{ url_for('admin_staff') }}">View All Staff</a>
+            <a href="{{ url_for('admin.admin_staff') }}">View All Staff</a>
         </li>
     </ul>
 
-    <a href="{{ url_for('logout') }}">
+    <a href="{{ url_for('authentication.logout') }}">
         Logout
     </a>
 

@@ -23,7 +23,7 @@
                 <td>{{ staff.email }}</td>
                 <td>{{ staff.phone }}</td>
                 <td>
-                    <a href="{{ url_for('approve_staff', user_id=staff.id) }}">Approve</a>
+                    <a href="{{ url_for('admin.approve_staff', user_id=staff.id) }}">Approve</a>
                 </td>
             </tr>
 
@@ -36,7 +36,7 @@
 
     {% endif %}
 
-    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
 
 </div>
 
