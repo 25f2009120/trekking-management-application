@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>All Treks</h2>
+
+    <a href="{{ url_for('admin.create_trek') }}">Create Trek</a>
+
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search" value="{{ search }}">
+
+        <select name="difficulty">
+            <option value="">All Difficulty</option>
+            <option value="Easy" {% if difficulty == "Easy" %}selected{% endif %}>Easy</option>
+            <option value="Normal" {% if difficulty == "Normal" %}selected{% endif %}>Normal</option>
+            <option value="Difficult" {% if difficulty == "Difficult" %}selected{% endif %}>Difficult</option>
+        </select>
+
+        <select name="status">
+            <option value="">All Statuses</option>
+            <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Approved" {% if status == "Approved" %}selected{% endif %}>Approved</option>
+            <option value="Canceled" {% if status == "Canceled" %}selected{% endif %}>Canceled</option>
+            <option value="Completed" {% if status == "Completed" %}selected{% endif %}>Completed</option>
+        </select>
+
+        <button type="submit">Filter</button>
+
+    </form>
+
+    {% if treks %}
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Difficulty</th>
+            <th>Location</th>
+            <th>Description</th>
+            <th>Staff</th>
+            <th>Status</th>
+            <th>Slots</th>
+            <th>Image</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for trek in treks %}
+
+        <tr>
+            <td>{{ trek.id }}</td>
+            <td>{{ trek.name }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.description }}</td>
+            <td>
+                {% if trek.staff %}
+                    {{ trek.staff.name }}
+                {% else %}
+                    Unassigned
+                {% endif %}
+            </td>
+            <td>{{ trek.status }}</td>
+            <td>{{ trek.available_slots }}</td>
+            <td>
+                {% for image in trek.images %}
+                    <a href="{{ image.image_url }}" target="_blank">Image {{ loop.index }}</a>
+                {% endfor %}
+            </td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.end_date }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">Edit</a>
+                <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}">Delete</a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+    <p>No treks found.</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}

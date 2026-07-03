@@ -6,6 +6,16 @@
 
     <h2>All Users</h2>
 
+    <form method="GET">
+        <input type="text", name="search, placeholder="Search" value="{{ search }}">
+        <select name="status">
+            <option value="All">All</option>
+            <option value="active" {% if status == "active" %} selcted {% endif %}>Active</option>
+            <option value="blacklisted" {% if status == "blacklisted" %} selcted {% endif %}>Blacklisted</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
     {% if users %}
 
         <table>
@@ -45,7 +55,7 @@
 
     {% else %}
 
-        <p>No user to blacklist.</p>
+        <p>No user found.</p>
 
     {% endif %}
 

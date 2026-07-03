@@ -1,5 +1,5 @@
 from flask import Flask
-from models import db, User, Trek, Booking, TrekImage, trek
+from models import db, User, Trek, Booking, TrekImage
 from blueprints.authentication import authentication
 from blueprints.user import user
 from blueprints.staff import staff

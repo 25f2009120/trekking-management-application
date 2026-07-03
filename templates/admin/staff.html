@@ -6,10 +6,23 @@
 
     <h2>All Staff</h2>
 
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search" value="{{ search }}">
+        <select name="status">
+            <option value="">All</option>
+            <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+            <option value="blacklisted" {% if status == "blacklisted" %}selected{% endif %}>Blacklisted</option>
+            <option value="approved" {% if status == "approved" %}selected{% endif %}>Approved</option>
+            <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
     {% if staff %}
 
         <table>
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -21,6 +34,7 @@
             {% for s in staff %}
 
             <tr>
+                <td>{{ s.id }}</td>
                 <td>{{ s.name }}</td>
                 <td>{{ s.email }}</td>
                 <td>{{ s.phone }}</td>
@@ -53,7 +67,7 @@
 
     {% else %}
 
-        <p>No staff to blacklist.</p>
+        <p>No staff found.</p>
 
     {% endif %}
 

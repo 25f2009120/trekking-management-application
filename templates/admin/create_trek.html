@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>
+
+    <h1>Create trek</h1>
+
+    <form method="POST">
+
+        <hr>
+
+        <input type="text" name="name" placeholder="Trek name" required>
+
+        <select name="difficulty" required>
+            <option name="Easy">Easy</option>
+            <option name="Normal">Normal</option>
+            <option name="Difficult">Difficult</option>
+        </select>
+
+        <input type="text" name="location" placeholder="Location" required>
+
+        <input type="number" name="duration" placeholder="Days" required>
+
+        <textarea name="description" placeholder="Description" required></textarea>
+
+        <input type="number" name="available_slots" placeholder="Available Slots" required>
+
+        <select name="status" required>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Canceled">Canceled</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <select name="staff_id">
+            <option value="">Unassigned</option>
+            {% for s in staff_list %}
+                <option value="{{ s.id }}">{{ s.name }}</option>
+            {% endfor %}
+        </select>
+
+        <p>Start Date</p>
+        <input type="date" name="start_date" required>
+
+        <p>End Date</p>
+        <input type="date" name="end_date" required>
+
+        <input type="text" name="image_urls" placeholder="Image URLs (separate with comma)" required>
+
+        <hr>
+
+        <button type="submit">Create</button>
+
+        <hr>
+
+    </form>
+
+    <a href="{{ url_for('admin.admin_treks') }}">Back to Treks</a>
+
+</div>
+
+{% endblock %}

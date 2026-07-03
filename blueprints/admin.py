@@ -1,8 +1,8 @@
 from flask import session, Blueprint, flash, url_for, render_template, redirect, request
-from models import db, User
+from models import db, User, Trek, Booking
+from datetime import datetime
 
 admin = Blueprint("admin", __name__)
-
 @admin.route("/admin/dashboard")
 def admin_dashboard():
     if "user_id" not in session:
@@ -12,7 +12,20 @@ def admin_dashboard():
         return redirect(url_for("authentication.login"))
 
     user = User.query.get(session["user_id"])
-    return render_template("admin/dashboard.html", user=user)
+    total_users = User.query.filter_by(role="user").count()
+    total_staff = User.query.filter_by(role="staff").count()
+    total_treks = Trek.query.count()
+    total_bookings = Booking.query.count()
+    pending_approvals = User.query.filter_by(role="staff", is_approved=False).count()
+
+    return render_template("admin/dashboard.html",
+                           user=user,
+                           total_users=total_users,
+                           total_staff=total_staff,
+                           total_treks=total_treks,
+                           total_bookings=total_bookings,
+                           pending_approvals=pending_approvals
+                           )
 
 @admin.route("/admin/staff-approvals")
 def staff_approvals():
@@ -34,16 +47,16 @@ def approve_staff(user_id):
     if session["role"] != "admin":
         return redirect(url_for("authentication.login"))
 
-    staff = User.query.get(user_id)
+    s = User.query.get(user_id)
 
-    if staff and staff.role == "staff":
-        staff.is_approved = True
+    if s and s.role == "staff":
+        s.is_approved = True
         db.session.commit()
         flash("Staff approved")
     else:
         flash("Staff not found")
 
-    return redirect(url_for("addmin.staff_approvals"))
+    return redirect(url_for("admin.staff_approvals"))
 
 @admin.route("/admin/staff")
 def admin_staff():
@@ -52,6 +65,25 @@ def admin_staff():
 
     if session["role"] != "admin":
         return redirect(url_for("authentication.login"))
+
+    search = request.args.get("search", "")
+    status = request.args.get("status", "")
+
+    query = User.query.filter_by(role="staff")
+
+    if search:
+        query = query.filter(
+            User.name.ilike(f"%{search}%") or User.email.ilike(f"%{search}%")
+        )
+
+    if status == "blacklisted":
+        query = query.filter_by(is_blacklisted=True)
+    elif status == "unblacklisted":
+        query = query.filter_by(is_blacklisted=False)
+    elif status == "approved":
+        query = query.filter_by(is_approved=True)
+    elif status == "pending":
+        query = query.filter_by(is_pending=False)
 
     staff = User.query.filter_by(role="staff").all()
 
@@ -74,7 +106,7 @@ def blacklist_staff(user_id):
     else:
         flash("Staff not found")
 
-    return redirect(url_for("addmin.admin_staff"))
+    return redirect(url_for("admin.admin_staff"))
 
 @admin.route("/admin/unblacklist-staff/<int:user_id>")
 def unblacklist_staff(user_id):
@@ -93,7 +125,7 @@ def unblacklist_staff(user_id):
     else:
         flash("Staff not found")
 
-    return redirect(url_for("addmin.admin_staff"))
+    return redirect(url_for("admin.admin_staff"))
 
 @admin.route("/admin/users")
 def admin_users():
@@ -103,9 +135,23 @@ def admin_users():
     if session["role"] != "admin":
         return redirect(url_for("authentication.login"))
 
-    users = User.query.filter_by(role="user").all()
+    search = request.args.get("search", "")
+    status = request.args.get("status", "")
 
-    return render_template("admin/users.html", users=users)
+    query = User.query.filter_by(role="user")
+
+    if search:
+        query = query.filter(
+            User.name.ilike(f"%{search}%") or User.email.ilike(f"%{search}%")
+        )
+    if status == "blacklisted":
+        query = query.filter_by(is_blacklisted=True)
+    elif status == "unblacklisted":
+        query = query.filter_by(is_blacklisted=False)
+
+    users = query.all()
+
+    return render_template("admin/users.html", users=users, search=search, status=status)
 
 @admin.route("/admin/blacklist/<int:user_id>")
 def blacklist_user(user_id):
@@ -125,7 +171,7 @@ def blacklist_user(user_id):
     else:
         flash("User not found")
 
-    return redirect(url_for("addmin.admin_users"))
+    return redirect(url_for("admin.admin_users"))
 
 @admin.route("/admin/unblacklist/<int:user_id>")
 def unblacklist_user(user_id):
@@ -144,4 +190,173 @@ def unblacklist_user(user_id):
     else:
         flash("User not found")
 
-    return redirect(url_for("addmin.admin_users"))
+    return redirect(url_for("admin.admin_users"))
+
+@admin.route("/admin/treks")
+def admin_treks():
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("authentication.login"))
+
+    search = request.args.get("search", "")
+    difficulty = request.args.get("difficulty", "")
+    status = request.args.get("status", "")
+
+    query = Trek.query
+    if search:
+        query = query.filter(
+            Trek.name.ilike(f"%{search}%") or Trek.location.like(f"%{search}%")
+        )
+
+    if difficulty:
+        query = query.filter(difficulty=="difficulty")
+    if status:
+        query = query.filter(status=="status")
+
+    treks = query.all()
+
+    return render_template("admin/treks.html", treks=treks, search=search, difficulty=difficulty, status=status)
+
+@admin.route("/admin/treks/create", methods=["GET", "POST"])
+def create_trek():
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("authentication.login"))
+
+    staff_list = User.query.filter_by(role="staff", is_approved=True, is_blacklisted=False).all()
+
+    if request.method == "POST":
+        name = request.form["name"]
+        difficulty = request.form["difficulty"]
+        location = request.form["location"]
+        duration = request.form["duration"]
+        description = request.form["description"]
+        available_slots = request.form["available_slots"]
+        staff_id = request.form["staff_id"]
+        start_date = datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
+        end_date = datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
+        image_urls = request.form["image_urls"]
+
+        new_trek = Trek(
+            name=name,
+            difficulty=difficulty,
+            location=location,
+            duration=duration,
+            description=description,
+            available_slots=available_slots,
+            staff_id=staff_id,
+            start_date=start_date,
+            end_date=end_date,
+            status="Pending"
+        )
+        db.session.add(new_trek)
+        db.session.commit()
+
+        if image_urls:
+            for url in image_urls.split(","):
+                url = url.strip()
+                if url:
+                    from models import TrekImage
+                    image = TrekImage(trek_id=new_trek.id, image_url=url)
+                    db.session.add(image)
+
+        db.session.commit()
+        flash("Trek created")
+        return redirect(url_for("admin.admin_treks"))
+
+    return render_template("admin/create_trek.html", staff_list=staff_list)
+
+@admin.route("/admin/treks/edit/<int:trek_id>", methods=["GET", "POST"])
+def edit_trek(trek_id):
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("authentication.login"))
+
+    trek = Trek.query.get(trek_id)
+    if not trek:
+        flash("Trek not found")
+        return redirect(url_for("admin.admin_treks"))
+
+    staff_list = User.query.filter_by(role="staff", is_approved=True, is_blacklisted=False).all()
+
+    if request.method == "POST":
+        trek.name = request.form["name"]
+        trek.difficulty = request.form["difficulty"]
+        trek.location = request.form["location"]
+        trek.duration = request.form["duration"]
+        trek.description = request.form["description"]
+        trek.available_slots = request.form["available_slots"]
+        trek.staff_id = request.form["staff_id"]
+        trek.start_date = datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
+        trek.end_date = datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
+        trek.status = request.form["status"]
+
+        image_urls = request.form["image_urls"]
+        from models import TrekImage
+        TrekImage.query.filter_by(trek_id=trek_id).delete()
+        if image_urls:
+            for url in image_urls.split(","):
+                url = url.strip()
+                if url:
+                    image = TrekImage(trek_id=trek.id, image_url=url)
+                    db.session.add(image)
+
+        db.session.commit()
+        flash("Trek edited")
+        return redirect(url_for("admin.admin_treks"))
+
+    current_images = ", ".join([image.image_url for image in trek.images])
+    return render_template("admin/edit_trek.html", trek=trek, current_images=current_images, staff_list=staff_list)
+
+@admin.route("/admin/treks/delete/<int:trek_id>")
+def delete_trek(trek_id):
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("authentication.login"))
+
+    trek = Trek.query.get(trek_id)
+
+    if trek:
+        from models import TrekImage
+        TrekImage.query.filter_by(trek_id=trek_id).delete()
+        Booking.query.filter_by(trek_id=trek_id).delete()
+        db.session.delete(trek)
+        db.session.commit()
+        flash("Trek deleted")
+    else:
+        flash("Trek not found")
+    return redirect(url_for("admin.admin_treks"))
+
+@admin.route("/admin/bookings")
+def admin_bookings():
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login"))
+
+    if session["role"] != "admin":
+        return redirect(url_for("authentication.login"))
+
+    search = request.args.get("search", "")
+    status = request.args.get("status", "")
+
+    query = Booking.query
+
+    if status:
+        query = query.filter_by(status=status)
+
+    bookings = query.all()
+
+    if search:
+        bookings = []
+        for b in bookings:
+            if search.lower() in b.user.name.lower() or search.lower() in b.trek.name.lower():
+                bookings.append(b)
+
+    return render_template("admin/bookings.html", bookings=bookings, search=search, status=status)

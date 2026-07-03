@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>
+
+    <h1>Edit trek</h1>
+
+    <form method="POST">
+
+        <input type="text" name="name" placeholder="Trek name" value="{{ trek.name }}" required>
+
+        <select name="difficulty" required>
+            <option value="Easy" {% if trek.difficulty == "Easy" %}selected{% endif %}>Easy</option>
+            <option value="Normal" {% if trek.difficulty == "Normal" %}selected{% endif %}>Normal</option>
+            <option value="Difficult" {% if trek.difficulty == "Difficult" %}selected{% endif %}>Difficult</option>
+        </select>
+
+        <input type="text" name="location" placeholder="Location" value="{{ trek.location }}" required>
+
+        <input type="number" name="duration" placeholder="Days" value="{{ trek.duration }}" required>
+
+        <textarea name="description" placeholder="Description" required>{{ trek.description }}</textarea>
+
+        <input type="number" name="available_slots" placeholder="Available Slots" value="{{ trek.available_slots }}" required>
+
+        <select name="staff_id">
+            <option value="">Unassigned</option>
+            {% for s in staff_list %}
+                <option value="{{ s.id }}" {% if trek.staff_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="status" required>
+            <option value="Pending" {% if trek.status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Approved" {% if trek.status == "Approved" %}selected{% endif %}>Approved</option>
+            <option value="Canceled" {% if trek.status == "Canceled" %}selected{% endif %}>Canceled</option>
+            <option value="Completed" {% if trek.status == "Completed" %}selected{% endif %}>Completed</option>
+        </select>
+
+        <input type="date" name="start_date" value="{{ trek.start_date }}" required>
+
+        <input type="date" name="end_date" value="{{ trek.end_date }}" required>
+
+        <input type="text" name="image_urls" value="{{ current_images }}" placeholder="Image URLs (separate with comma)" required>
+
+        <button type="submit">Update</button>
+
+    </form>
+
+    <a href="{{ url_for('admin.admin_treks') }}">Back to Treks</a>
+
+</div>
+
+{% endblock %}

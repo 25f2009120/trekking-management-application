@@ -10,13 +10,21 @@
 
     <hr>
 
+    <h3>Status</h3>
+
+    <ul>
+        <li>Total Users: {{ total_users }}</li>
+        <li>Total Staff: {{ total_staff }}</li>
+        <li>Total Treks: {{ total_treks }}</li>
+        <li>Total Bookings: {{ total_bookings }}</li>
+        <li>Pending Staff Approvals: {{ pending_approvals }}</li>
+    </ul>
+
+    <hr>
+
     <h3>Admin Actions</h3>
 
     <ul>
-        <li>Add Trek</li>
-        <li>View All Trek</li>
-        <li>View All Users</li>
-        <li>View All Bookings</li>
         <li>
             <a href="{{ url_for('admin.staff_approvals') }}">Staff Approvals</a>
         </li>
@@ -25,6 +33,15 @@
         </li>
         <li>
             <a href="{{ url_for('admin.admin_staff') }}">View All Staff</a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin.admin_treks') }}">View All Treks</a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin.admin_bookings') }}">View All Bookings</a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin.create_trek') }}">Create Trek</a>
         </li>
     </ul>
 
