@@ -73,7 +73,7 @@ def admin_staff():
 
     if search:
         query = query.filter(
-            User.name.ilike(f"%{search}%") or User.email.ilike(f"%{search}%")
+            User.name.ilike(f"%{search}%") | User.email.ilike(f"%{search}%")
         )
 
     if status == "blacklisted":
@@ -83,11 +83,11 @@ def admin_staff():
     elif status == "approved":
         query = query.filter_by(is_approved=True)
     elif status == "pending":
-        query = query.filter_by(is_pending=False)
+        query = query.filter_by(is_approved=False)
 
-    staff = User.query.filter_by(role="staff").all()
+    staff = query.all()
 
-    return render_template("admin/staff.html", staff=staff)
+    return render_template("admin/staff.html", staff=staff, search=search, status=status)
 
 @admin.route("/admin/blacklist-staff/<int:user_id>")
 def blacklist_staff(user_id):
@@ -142,7 +142,7 @@ def admin_users():
 
     if search:
         query = query.filter(
-            User.name.ilike(f"%{search}%") or User.email.ilike(f"%{search}%")
+            User.name.ilike(f"%{search}%") | User.email.ilike(f"%{search}%")
         )
     if status == "blacklisted":
         query = query.filter_by(is_blacklisted=True)
@@ -207,13 +207,13 @@ def admin_treks():
     query = Trek.query
     if search:
         query = query.filter(
-            Trek.name.ilike(f"%{search}%") or Trek.location.like(f"%{search}%")
+            Trek.name.ilike(f"%{search}%") | Trek.location.like(f"%{search}%")
         )
 
     if difficulty:
-        query = query.filter(difficulty=="difficulty")
+        query = query.filter_by(difficulty=difficulty)
     if status:
-        query = query.filter(status=="status")
+        query = query.filter_by(status=status)
 
     treks = query.all()
 
@@ -236,7 +236,7 @@ def create_trek():
         duration = request.form["duration"]
         description = request.form["description"]
         available_slots = request.form["available_slots"]
-        staff_id = request.form["staff_id"]
+        staff_id = request.form["staff_id"] or None
         start_date = datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
         end_date = datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
         image_urls = request.form["image_urls"]
@@ -292,7 +292,7 @@ def edit_trek(trek_id):
         trek.duration = request.form["duration"]
         trek.description = request.form["description"]
         trek.available_slots = request.form["available_slots"]
-        trek.staff_id = request.form["staff_id"]
+        trek.staff_id = request.form["staff_id"] or None
         trek.start_date = datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
         trek.end_date = datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
         trek.status = request.form["status"]
@@ -354,9 +354,10 @@ def admin_bookings():
     bookings = query.all()
 
     if search:
-        bookings = []
+        filtered = []
         for b in bookings:
-            if search.lower() in b.user.name.lower() or search.lower() in b.trek.name.lower():
-                bookings.append(b)
+            if search.lower() in b.user.name.lower() | search.lower() in b.trek.name.lower():
+                filtered.append(b)
+        bookings = filtered
 
     return render_template("admin/bookings.html", bookings=bookings, search=search, status=status)

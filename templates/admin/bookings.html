@@ -12,8 +12,8 @@
 
         <select name="status">
             <option value="">All</option>
-            <option value="" {% if status == "Booked" %}selected{% endif %}>Booked</option>
-            <option value="" {% if status == "Canceld" %}selected{% endif %}>Canceled</option>
+            <option value="Booked" {% if status == "Booked" %}selected{% endif %}>Booked</option>
+            <option value="Canceled" {% if status == "Canceled" %}selected{% endif %}>Canceled</option>
         </select>
 
         <button type="submit">Filter</button>
