@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Update Profile</h2>
+
+    <form method="POST">
+
+        <input name="name" value="{{ user.name }}" type="text" placeholder="Name" required>
+
+        <input name="phone" value="{{ user.phone }}" type="tel" placeholder="Phone" required>
+
+        <button type="submit">Update Profile</button>
+
+    </form>
+
+    <a href="{{ url_for('staff.staff_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}

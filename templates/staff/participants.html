@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Participants: {{ trek.name }}</h2>
+
+    <p>Total Participants: {{ bookings|length }}</p>
+
+    {% if bookings %}
+
+    <table>
+
+        <tr>
+            <th>Booking ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Booking Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        {% for booking in bookings %}
+
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.user.name }}</td>
+            <td>{{ booking.user.email }}</td>
+            <td>{{ booking.user.phone }}</td>
+            <td>{{ booking.booking_date }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+                <a href="{{ url_for('staff.remove_participant', trek_id=trek.id, booking_id=booking.id) }}">Remove</a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+    <p>No bookings found</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('staff.staff_treks') }}">Back to Treks</a>
+
+</div>
+
+{% endblock %}

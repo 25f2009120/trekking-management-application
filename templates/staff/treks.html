@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Assigned Treks</h2>
+
+    <form method="GET">
+
+        <input type="text" name="search" placeholder="Search" value="{{ search }}">
+
+        <select name="status">
+            <option value="">All</option>
+            <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Approved" {% if status == "Approved" %}selected{% endif %}>Approved</option>
+            <option value="Opened" {% if status == "Opened" %}selected{% endif %}>Opened</option>
+            <option value="Completed" {% if status == "Completed" %}selected{% endif %}>Completed</option>
+            <option value="Closed" {% if status == "Closed" %}selected{% endif %}>Closed</option>
+            <option value="Canceled" {% if status == "Canceled" %}selected{% endif %}>Canceled</option>
+        </select>
+
+        <button type="submit">Filter</button>
+
+    </form>
+
+    {% if treks %}
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Difficulty</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Available Slots</th>
+            <th>Participants</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for trek in treks %}
+
+        <tr>
+            <td>{{ trek.id }}</td>
+            <td>{{ trek.name }}</td>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ trek.description }}</td>
+            <td>{{ trek.status }}</td>
+            <td>{{ trek.available_slots }}</td>
+            <td>{{ trek.bookings.count() }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.end_date }}</td>
+            <td>
+                <a href="{{ url_for('staff.edit_trek', trek_id=trek.id) }}">Edit</a>
+                <a href="{{ url_for('staff.trek_participants', trek_id=trek.id) }}">Participants</a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+    <p>No treks found.</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('staff.staff_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}

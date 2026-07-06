@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Edit Trek: {{ trek.name }}</h2>
+
+    <form method="POST">
+
+        <p>Status</p>
+
+        <select name="status" required>
+            <option value="Pending" {% if trek.status == "Pending" %}selected{% endif %}>Pending</option>
+            <option value="Approved" {% if trek.status == "Approved" %}selected{% endif %}>Approved</option>
+            <option value="Completed" {% if trek.status == "Completed" %}selected{% endif %}>Completed</option>
+            <option value="Canceled" {% if trek.status == "Canceled" %}selected{% endif %}>Canceled</option>
+        </select>
+
+        <p>Available Slots</p>
+
+        <input name="available_slots" type="number" value="{{ trek.available_slots }}" required>
+
+        <button type="submit">Update</button>
+
+    </form>
+
+    <a href="{{ url_for('staff.staff_treks') }}">Back to Treks</a>
+
+</div>
+
+{% endblock %}
