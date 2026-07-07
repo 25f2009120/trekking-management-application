@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>My Bookings</h2>
+
+    <form method="GET">
+
+        <select name="status">
+            <option value="">All</option>
+            <option value="Booked" {% if status == "Booked" %}selected{% endif %}>Booked</option>
+            <option value="Canceled" {% if status == "Canceled" %}selected{% endif %}>Canceled</option>
+        </select>
+
+        <button type="submit">Filter</button>
+
+    </form>
+
+    {% if bookings %}
+
+    <table>
+
+        <tr>
+            <th>Trek</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Booking Date</th>
+            <th>Status</th>
+            <th>Actiom</th>
+        </tr>
+
+        {% for booking in bookings %}
+
+        <tr>
+            <td>{{ booking.trek.name }}</td>
+            <td>{{ booking.trek.location }}</td>
+            <td>{{ booking.trek.start_date }}</td>
+            <td>{{ booking.trek.end_date }}</td>
+            <td>{{ booking.booking_date }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+                {% if booking.status == "Booked" %}
+                    <a href="{{ url_for('user.cancel_booking', booking_id=booking.id) }}">Cancel</a>
+                {% endif %}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+    <p>No bookings found</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('user.user_dashboard') }}">Dashboard</a>
+
+</div>
+
+{% endblock %}

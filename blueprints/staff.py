@@ -132,6 +132,10 @@ def remove_participant(trek_id, booking_id):
 
     trek = Trek.query.get(trek_id)
 
+    if not trek:
+        flash("Trek not found")
+        return redirect(url_for("staff.staff_treks"))
+
     if trek.staff_id != session["user_id"]:
         flash("You are not authorized to edit this trek")
         return redirect(url_for("staff.staff_treks"))

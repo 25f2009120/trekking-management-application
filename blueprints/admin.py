@@ -356,7 +356,7 @@ def admin_bookings():
     if search:
         filtered = []
         for b in bookings:
-            if search.lower() in b.user.name.lower() | search.lower() in b.trek.name.lower():
+            if search.lower() in b.user.name.lower() or search.lower() in b.trek.name.lower():
                 filtered.append(b)
         bookings = filtered
 
