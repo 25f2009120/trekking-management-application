@@ -43,7 +43,9 @@
             <td>{{ booking.status }}</td>
             <td>
                 {% if booking.status == "Booked" %}
-                    <a href="{{ url_for('user.cancel_booking', booking_id=booking.id) }}">Cancel</a>
+                    <form method="POST" action="{{ url_for('user.cancel_booking', booking_id=booking.id) }}">
+                        <button type="submit">Cancel</button>
+                    </form>
                 {% endif %}
             </td>
         </tr>

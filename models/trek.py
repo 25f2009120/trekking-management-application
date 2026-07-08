@@ -18,8 +18,8 @@ class Trek(db.Model):
 
     #Relationships
     staff = db.relationship("User", back_populates="assigned_treks", foreign_keys="Trek.staff_id")
-    bookings = db.relationship("Booking", back_populates="trek", lazy="dynamic")
-    images = db.relationship("TrekImage", back_populates="trek")
+    bookings = db.relationship("Booking", back_populates="trek", lazy="dynamic", cascade="all, delete-orphan")
+    images = db.relationship("TrekImage", back_populates="trek", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"Trek('{self.id}', '{self.name}', '{self.difficulty}', '{self.location}', '{self.duration}', '{self.description}', '{self.available_slots}', '{self.status}', '{self.staff_id}', '{self.start_date}', '{self.end_date}', '{self.created_at}')"

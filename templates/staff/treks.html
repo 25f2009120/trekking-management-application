@@ -14,9 +14,7 @@
             <option value="">All</option>
             <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
             <option value="Approved" {% if status == "Approved" %}selected{% endif %}>Approved</option>
-            <option value="Opened" {% if status == "Opened" %}selected{% endif %}>Opened</option>
             <option value="Completed" {% if status == "Completed" %}selected{% endif %}>Completed</option>
-            <option value="Closed" {% if status == "Closed" %}selected{% endif %}>Closed</option>
             <option value="Canceled" {% if status == "Canceled" %}selected{% endif %}>Canceled</option>
         </select>
 
@@ -52,7 +50,7 @@
             <td>{{ trek.description }}</td>
             <td>{{ trek.status }}</td>
             <td>{{ trek.available_slots }}</td>
-            <td>{{ trek.bookings.count() }}</td>
+            <td>{{ participant_counts[trek.id] }}</td>
             <td>{{ trek.start_date }}</td>
             <td>{{ trek.end_date }}</td>
             <td>

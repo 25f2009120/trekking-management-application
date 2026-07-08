@@ -10,7 +10,7 @@
         <input type="text" name="search" placeholder="Search" value="{{ search }}">
         <select name="status">
             <option value="">All</option>
-            <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+            <option value="unblacklisted" {% if status == "unblacklisted" %}selected{% endif %}>Active</option>
             <option value="blacklisted" {% if status == "blacklisted" %}selected{% endif %}>Blacklisted</option>
             <option value="approved" {% if status == "approved" %}selected{% endif %}>Approved</option>
             <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
@@ -54,9 +54,17 @@
                 </td>
                 <td>
                     {% if s.is_blacklisted %}
-                        <a href="{{ url_for('admin.unblacklist_staff', user_id=s.id) }}">Unblacklist</a>
+
+                        <form methods="POST" action="{{ url_for('admin.unblacklist_staff', user_id=s.id) }}">
+                            <button type="submit">Unblacklist</button>
+                        </form>
+
                     {% else %}
-                        <a href="{{ url_for('admin.blacklist_staff', user_id=s.id) }}">Blacklist</a>
+
+                        <form method="POST" action="{{ url_for('admin.blacklist_staff', user_id=s.id) }}">
+                            <button type="submit">Blacklist</button>
+                        </form>
+
                     {% endif %}
                 </td>
             </tr>

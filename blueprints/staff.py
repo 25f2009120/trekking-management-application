@@ -16,7 +16,7 @@ def staff_dashboard():
     assigned_treks = Trek.query.filter_by(staff_id=user.id).all()
 
     total_treks = len(assigned_treks)
-    total_participants = sum(trek.bookings.count() for trek in assigned_treks)
+    total_participants = sum(trek.bookings.filter_by(status="Booked").count() for trek in assigned_treks)
 
     pending_treks = sum(1 for t in assigned_treks if t.status == "Pending")
     approved_treks = sum(1 for t in assigned_treks if t.status == "Approved")
@@ -58,12 +58,16 @@ def staff_treks():
         query = query.filter_by(status=status)
 
     treks = query.all()
+    participant_counts = {
+        trek.id: trek.bookings.filter_by(status="Booked").count() for trek in treks
+    }
 
     return render_template(
         "staff/treks.html",
         treks = treks,
         search = search,
-        status = status
+        status = status,
+        participant_counts=participant_counts
     )
 
 @staff.route("/staff/treks/edit/<int:trek_id>", methods=["GET", "POST"])
@@ -86,7 +90,11 @@ def edit_trek(trek_id):
         return redirect(url_for("staff.staff_treks"))
 
     if request.method == "POST":
-        trek.status = request.form["status"]
+        new_status = request.form["status"]
+        if new_status not in ("Completed", "Canceled"):
+            flash("You are not allowed to do that")
+            return redirect(url_for("staff.staff_treks"))
+        trek.status = new_status
         trek.available_slots = request.form["available_slots"]
         db.session.commit()
         flash("Trek updated")
@@ -121,7 +129,7 @@ def trek_participants(trek_id):
         trek = trek,
     )
 
-@staff.route("/staff/treks/<int:trek_id>/participants/remove/<int:booking_id>")
+@staff.route("/staff/treks/<int:trek_id>/participants/remove/<int:booking_id>", methods=["POST"])
 def remove_participant(trek_id, booking_id):
 
     if "user_id" not in session:
@@ -143,7 +151,8 @@ def remove_participant(trek_id, booking_id):
     booking = Booking.query.get(booking_id)
 
     if booking and booking.trek_id == trek_id:
-        trek.available_slots += 1
+        if booking.status == "Booked":
+            trek.available_slots += 1
         db.session.delete(booking)
         db.session.commit()
         flash("Participant removed")

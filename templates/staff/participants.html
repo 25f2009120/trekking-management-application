@@ -32,7 +32,9 @@
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.status }}</td>
             <td>
-                <a href="{{ url_for('staff.remove_participant', trek_id=trek.id, booking_id=booking.id) }}">Remove</a>
+                <form method="POST" action="{{ url_for('staff.remove_participant', trek_id=trek.id, booking_id=booking.id) }}">
+                    <button type="submit">Remove</button>
+                </form>
             </td>
         </tr>
 

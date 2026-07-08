@@ -75,7 +75,9 @@
             <td>{{ trek.end_date }}</td>
             <td>
                 <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">Edit</a>
-                <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}">Delete</a>
+                <form method="POST" action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}">
+                    <button type="submit">Delete</button>
+                </form>
             </td>
         </tr>
 

@@ -142,7 +142,7 @@ def my_bookings():
 
     return render_template("user/bookings.html", bookings=bookings, status=status)
 
-@user.route("/user/bookings/cancel/<int:booking_id>")
+@user.route("/user/bookings/cancel/<int:booking_id>", methods=["POST"])
 def cancel_booking(booking_id):
 
     if "user_id" not in session:
@@ -158,7 +158,7 @@ def cancel_booking(booking_id):
         return redirect(url_for("user.my_bookings"))
 
     if booking.status != "Booked":
-        flash("this booking can't be ")
+        flash("this booking can't be canceled")
         return redirect(url_for("user.my_bookings"))
 
     if booking.trek.start_date < date.today():

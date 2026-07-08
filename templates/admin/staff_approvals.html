@@ -23,7 +23,9 @@
                 <td>{{ staff.email }}</td>
                 <td>{{ staff.phone }}</td>
                 <td>
-                    <a href="{{ url_for('admin.approve_staff', user_id=staff.id) }}">Approve</a>
+                    <form method="POST" action="{{ url_for('admin.approve_staff', user_id=staff.id) }}">
+                        <button type="submit">Approve</button>
+                    </form>
                 </td>
             </tr>
 

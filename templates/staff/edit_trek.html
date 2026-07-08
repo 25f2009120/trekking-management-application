@@ -11,11 +11,11 @@
         <p>Status</p>
 
         <select name="status" required>
-            <option value="Pending" {% if trek.status == "Pending" %}selected{% endif %}>Pending</option>
-            <option value="Approved" {% if trek.status == "Approved" %}selected{% endif %}>Approved</option>
             <option value="Completed" {% if trek.status == "Completed" %}selected{% endif %}>Completed</option>
             <option value="Canceled" {% if trek.status == "Canceled" %}selected{% endif %}>Canceled</option>
         </select>
+
+        <p>Current status: {{ trek.status }}</p>
 
         <p>Available Slots</p>
 

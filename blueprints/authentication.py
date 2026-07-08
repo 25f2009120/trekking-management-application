@@ -73,9 +73,11 @@ def user_register():
             name=name,
             email = email,
             phone = phone,
-            password = generate_password_hash(password),
             role = "user"
         )
+
+        new_user.password_hash(password)
+
         db.session.add(new_user)
         db.session.commit()
 
@@ -106,10 +108,12 @@ def staff_register():
             name = name,
             email = email,
             phone = phone,
-            password = generate_password_hash(password),
             role = "staff",
             is_approved = False
         )
+
+        new_staff.password_hash(password)
+
         db.session.add(new_staff)
         db.session.commit()
 

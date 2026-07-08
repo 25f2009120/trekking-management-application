@@ -39,7 +39,7 @@ def staff_approvals():
 
     return render_template("admin/staff_approvals.html", unapproved_staff=unapproved_staff)
 
-@admin.route("/admin/approve-staff/<int:user_id>")
+@admin.route("/admin/approve-staff/<int:user_id>", methods=["POST"])
 def approve_staff(user_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -89,7 +89,7 @@ def admin_staff():
 
     return render_template("admin/staff.html", staff=staff, search=search, status=status)
 
-@admin.route("/admin/blacklist-staff/<int:user_id>")
+@admin.route("/admin/blacklist-staff/<int:user_id>", methods=["POST"])
 def blacklist_staff(user_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -108,7 +108,7 @@ def blacklist_staff(user_id):
 
     return redirect(url_for("admin.admin_staff"))
 
-@admin.route("/admin/unblacklist-staff/<int:user_id>")
+@admin.route("/admin/unblacklist-staff/<int:user_id>", methods=["POST"])
 def unblacklist_staff(user_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -153,7 +153,7 @@ def admin_users():
 
     return render_template("admin/users.html", users=users, search=search, status=status)
 
-@admin.route("/admin/blacklist/<int:user_id>")
+@admin.route("/admin/blacklist/<int:user_id>", methods=["POST"])
 def blacklist_user(user_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -173,7 +173,7 @@ def blacklist_user(user_id):
 
     return redirect(url_for("admin.admin_users"))
 
-@admin.route("/admin/unblacklist/<int:user_id>")
+@admin.route("/admin/unblacklist/<int:user_id>", methods=["POST"])
 def unblacklist_user(user_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -207,7 +207,7 @@ def admin_treks():
     query = Trek.query
     if search:
         query = query.filter(
-            Trek.name.ilike(f"%{search}%") | Trek.location.like(f"%{search}%")
+            Trek.name.ilike(f"%{search}%") | Trek.location.ilike(f"%{search}%")
         )
 
     if difficulty:
@@ -239,6 +239,11 @@ def create_trek():
         staff_id = request.form["staff_id"] or None
         start_date = datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
         end_date = datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
+
+        if end_date < start_date:
+            flash("End date can't be before start date")
+            return redirect(url_for("admin.create_trek"))
+
         image_urls = request.form["image_urls"]
 
         new_trek = Trek(
@@ -314,7 +319,7 @@ def edit_trek(trek_id):
     current_images = ", ".join([image.image_url for image in trek.images])
     return render_template("admin/edit_trek.html", trek=trek, current_images=current_images, staff_list=staff_list)
 
-@admin.route("/admin/treks/delete/<int:trek_id>")
+@admin.route("/admin/treks/delete/<int:trek_id>", methods=["POST"])
 def delete_trek(trek_id):
     if "user_id" not in session:
         return redirect(url_for("authentication.login"))
@@ -325,9 +330,6 @@ def delete_trek(trek_id):
     trek = Trek.query.get(trek_id)
 
     if trek:
-        from models import TrekImage
-        TrekImage.query.filter_by(trek_id=trek_id).delete()
-        Booking.query.filter_by(trek_id=trek_id).delete()
         db.session.delete(trek)
         db.session.commit()
         flash("Trek deleted")
