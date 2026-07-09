@@ -121,7 +121,7 @@ def trek_participants(trek_id):
         flash("You are not authorized to edit this trek")
         return redirect(url_for("staff.staff_treks"))
 
-    bookings = trek.bookings.all()
+    bookings = trek.bookings.filter_by(status="Booked").all()
 
     return render_template(
         "staff/participants.html",

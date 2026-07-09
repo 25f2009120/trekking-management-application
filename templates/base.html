@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Trekking Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    {% block head %}{% endblock %}
 </head>
 <body>
 <nav>
@@ -29,7 +32,9 @@
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p>{{ message }}</p>
+                <p class="flash-msg">
+                    {{ message }}
+                </p>
             {% endfor %}
         {% endif %}
     {% endwith %}

@@ -1,58 +1,72 @@
 {% extends "base.html" %}
 
+{% block head %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+{% endblock %}
+
 {% block content %}
 
-<div class="card">
+<div class="container">
 
-    <h1>User Dashboard</h1>
+    <div class="card">
 
-    <p>Welcome, {{ user.name }}!</p>
+        <div class="card-header">
 
-    <hr>
+            <h1>User Dashboard</h1>
 
-    <h3>Status</h3>
+            <p>Welcome, {{ user.name }}!</p>
 
-    <ul>
-        <li>Booked Treks: {{ total_bookings }}</li>
-        <li>Completed Treks: {{ total_completed }}</li>
-    </ul>
+            <hr>
 
-    <hr>
+            <h3>Status</h3>
 
-    <h3>Upcoming Treks</h3>
+            <ul>
+                <li>Booked Treks: {{ total_bookings }}</li>
+                <li>Completed Treks: {{ total_completed }}</li>
+            </ul>
 
-    {% if upcoming_bookings %}
+            <hr>
 
-        <ul>
+            <h3>Upcoming Treks</h3>
 
-            {% for booking in upcoming_bookings %}
+            {% if upcoming_bookings %}
 
-            <li>
-                {{ booking.trek.name }} - {{ booking.trek.location }}
-                ({{ booking.trek.start_date }} - {{ booking.trek.end_date }})
-            </li>
+                <ul>
 
-            {% endfor %}
+                    {% for booking in upcoming_bookings %}
 
-        </ul>
+                    <li>
+                        {{ booking.trek.name }} - {{ booking.trek.location }}
+                        ({{ booking.trek.start_date }} - {{ booking.trek.end_date }})
+                    </li>
 
-    {% else %}
+                    {% endfor %}
 
-        <p>No upcoming booked.</p>
+                </ul>
 
-    {% endif %}
+            {% else %}
 
-    <hr>
+                <p>No upcoming booked.</p>
 
-    <h3>Actions</h3>
+            {% endif %}
 
-    <ul>
-        <li><a href="{{ url_for('user.available_treks') }}">View Available Treks</a></li>
-        <li><a href="{{ url_for('user.my_bookings') }}">My Bookings</a></li>
-        <li><a href="{{ url_for('user.user_profile') }}">Update Profile</a></li>
-    </ul>
+            <hr>
 
-    <a href="{{ url_for('authentication.logout') }}">Logout</a>
+            <h3>Actions</h3>
+
+            <ul class="d-flex flex-column gap-2">
+                <li><a href="{{ url_for('user.available_treks') }}" class="btn btn-primary btn-sm">View Available Treks</a></li>
+                <li><a href="{{ url_for('user.my_bookings') }}" class="btn btn-primary btn-sm">My Bookings</a></li>
+                <li><a href="{{ url_for('user.user_profile') }}" class="btn btn-primary btn-sm">Update Profile</a></li>
+            </ul>
+
+            <a href="{{ url_for('authentication.logout') }}" class="btn btn-danger">Logout</a>
+
+        </div>
+
+    </div>
 
 </div>
 

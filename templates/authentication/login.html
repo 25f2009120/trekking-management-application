@@ -1,31 +1,45 @@
 {% extends "base.html" %}
 
+{% block head %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+{% endblock %}
+
 {% block content %}
 
-<div class="card">
+    <div class="container">
 
-    <h2>Login</h2>
+        <div class="card">
 
-    <form method="POST">
+            <div class="card-body">
 
-        <input
-            type="email"
-            name="email"
-            placeholder="example@123.com"
-            required>
+                <h2>Login</h2>
 
-        <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required>
+                <form method="POST">
 
-        <button type="submit">
-            Login
-        </button>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="example@123.com"
+                        required>
 
-    </form>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required>
 
-</div>
+                    <button type="submit" class="btn btn-primary">
+                        Login
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 {% endblock %}

@@ -1,6 +1,6 @@
 from flask import session, Blueprint, flash, url_for, render_template, redirect, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User
+from models import db, User, Trek
 
 authentication = Blueprint('authentication', __name__)
 
@@ -8,7 +8,11 @@ authentication = Blueprint('authentication', __name__)
 
 @authentication.route("/")
 def index():
-    return render_template("index.html")
+    if not session.get("user_id"):
+        return redirect(url_for("authentication.login"))
+
+    treks = Trek.query.all()
+    return render_template("index.html", treks = treks)
 
 @authentication.route("/login", methods=["GET", "POST"])
 def login():
@@ -97,7 +101,7 @@ def staff_register():
         existing_user = User.query.filter_by(email=email).first()
 
         if existing_user:
-            flash("Email address already registered")
+            flash("Email address not available")
             return redirect(url_for("authentication.staff_register"))
 
         if password != confirm_password:
