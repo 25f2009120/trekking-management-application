@@ -37,4 +37,4 @@ if __name__ == "__main__":
             db.session.add(admin_user)
             db.session.commit()
 
-    app.run(debug=True)
+    app.run()
