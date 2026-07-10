@@ -1,6 +1,15 @@
 from datetime import datetime
 from . import db
 
+TREK_STATUSES = ["Pending", "Approved", "Open", "Closed", "Started", "Completed"]
+
+STAFF_STATUS_TRANSITIONS = {
+    "Approved": ["Open"],
+    "Open": ["Closed", "Started"],
+    "Closed": ["Open", "Started"],
+    "Started": ["Completed"]
+}
+
 #Trek
 class Trek(db.Model):
     id = db.Column(db.Integer, primary_key = True)

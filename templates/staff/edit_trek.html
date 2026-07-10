@@ -8,11 +8,20 @@
 
     <form method="POST">
 
-        <p>Status</p>
+        <p>Current Status: {{ trek.status }}</p>
+
+        <p>Change Status to:</p>
 
         <select name="status" required>
-            <option value="Completed" {% if trek.status == "Completed" %}selected{% endif %}>Completed</option>
-            <option value="Canceled" {% if trek.status == "Canceled" %}selected{% endif %}>Canceled</option>
+
+            {% if not allowed_next %}
+                <option value="{{ trek.status }}" selected>{{ trek.status }} (no further changes allowed)</option>
+            {% endif %}
+
+            {% for s in allowed_next %}
+                <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+
         </select>
 
         <p>Current status: {{ trek.status }}</p>

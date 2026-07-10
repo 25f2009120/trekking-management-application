@@ -23,7 +23,8 @@ def user_dashboard():
     today = datetime.today()
 
     upcoming_bookings = [
-        booking for booking in bookings if booking.trek.status == "Approved" and booking.trek.start_date >= date.today()
+        booking for booking in bookings
+        if booking.trek.status in ("Open", "Closed", "Started") and booking.trek.start_date >= date.today()
     ]
 
     upcoming_bookings.sort(key=lambda booking: booking.trek.start_date)
@@ -45,7 +46,7 @@ def available_treks():
 
     location = request.args.get("location", "")
 
-    query = Trek.query.filter_by(status="Approved")
+    query = Trek.query.filter_by(status="Open")
 
     if search:
         query = query.filter(
@@ -89,8 +90,8 @@ def book_trek(trek_id):
         flash("Trek not found")
         return redirect(url_for("user.available_treks"))
 
-    if trek.status != "Approved":
-        flash("Trek not approved")
+    if trek.status != "Open":
+        flash("Trek is not open for booking.")
         return redirect(url_for("user.available_treks"))
 
     if trek.available_slots <= 0:
@@ -161,7 +162,7 @@ def cancel_booking(booking_id):
         flash("this booking can't be canceled")
         return redirect(url_for("user.my_bookings"))
 
-    if booking.trek.start_date < date.today():
+    if booking.trek.start_date < date.today() or booking.trek.status in ("Started", "Completed"):
         flash("Trek has already started")
         return redirect(url_for("user.my_bookings"))
 

@@ -1,5 +1,5 @@
 from flask import session, Blueprint, flash, url_for, render_template, redirect, request
-from models import db, User, Trek, TrekImage, Booking
+from models import db, User, Trek, TrekImage, Booking, STAFF_STATUS_TRANSITIONS
 from datetime import datetime
 
 staff = Blueprint("staff", __name__)
@@ -20,9 +20,10 @@ def staff_dashboard():
 
     pending_treks = sum(1 for t in assigned_treks if t.status == "Pending")
     approved_treks = sum(1 for t in assigned_treks if t.status == "Approved")
+    open_treks = sum(1 for t in assigned_treks if t.status == "Open")
+    closed_treks = sum(1 for t in assigned_treks if t.status == "Closed")
+    started_treks = sum(1 for t in assigned_treks if t.status == "Started")
     completed_treks = sum(1 for t in assigned_treks if t.status == "Completed")
-    canceled_treks = sum(1 for t in assigned_treks if t.status == "Canceled")
-
     return render_template(
         "staff/dashboard.html",
         user=user,
@@ -30,8 +31,10 @@ def staff_dashboard():
         total_participants = total_participants,
         pending_treks = pending_treks,
         approved_treks = approved_treks,
-        completed_treks = completed_treks,
-        canceled_treks = canceled_treks
+        open_treks = open_treks,
+        closed_treks = closed_treks,
+        started_treks = started_treks,
+        completed_treks = completed_treks
     )
 
 @staff.route("/staff/treks")
@@ -49,10 +52,10 @@ def staff_treks():
     query = Trek.query.filter_by(staff_id=session["user_id"])
 
     if search:
-        query = query.filter(
-            Trek.name.ilike(f"%{search}%") |
-            Trek.location.ilike(f"%{search}%")
-        )
+        filters = [Trek.id.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")]
+        if search.isdigit():
+            filters.append(Trek.id == int(search))
+        query = query.filter(db.or_(*filters))
 
     if status:
         query = query.filter_by(status=status)
@@ -89,10 +92,12 @@ def edit_trek(trek_id):
         flash("You are not authorized to edit this trek")
         return redirect(url_for("staff.staff_treks"))
 
+    allowed_next = STAFF_STATUS_TRANSITIONS.get(trek.status, [])
+
     if request.method == "POST":
         new_status = request.form["status"]
-        if new_status not in ("Completed", "Canceled"):
-            flash("You are not allowed to do that")
+        if new_status not in allowed_next:
+            flash(f"You are not allowed to move trek from '{trek.status}' to '{new_status}'")
             return redirect(url_for("staff.staff_treks"))
         trek.status = new_status
         trek.available_slots = request.form["available_slots"]
@@ -100,7 +105,7 @@ def edit_trek(trek_id):
         flash("Trek updated")
         return redirect(url_for("staff.staff_treks"))
 
-    return render_template("staff/edit_trek.html", trek = trek)
+    return render_template("staff/edit_trek.html", trek = trek, allowed_next=allowed_next)
 
 @staff.route("/staff/treks/<int:trek_id>/participants")
 def trek_participants(trek_id):

@@ -72,9 +72,10 @@ def admin_staff():
     query = User.query.filter_by(role="staff")
 
     if search:
-        query = query.filter(
-            User.name.ilike(f"%{search}%") | User.email.ilike(f"%{search}%")
-        )
+        filter = [User.name.ilike(f"%{search}%"), User.email.ilike(f"%{search}")]
+        if search.isdigit():
+            filter.append(User.id == int(search))
+        query = query.filter(db.or_(*filter))
 
     if status == "blacklisted":
         query = query.filter_by(is_blacklisted=True)
@@ -141,9 +142,10 @@ def admin_users():
     query = User.query.filter_by(role="user")
 
     if search:
-        query = query.filter(
-            User.name.ilike(f"%{search}%") | User.email.ilike(f"%{search}%")
-        )
+        filter = [User.name.ilike(f"%{search}%"), User.email.ilike(f"%{search}%")]
+        if search.isdigit():
+            filter.append(User.id == int(search))
+        query = query.filter(db.or_(*filter))
     if status == "blacklisted":
         query = query.filter_by(is_blacklisted=True)
     elif status == "unblacklisted":
@@ -206,9 +208,10 @@ def admin_treks():
 
     query = Trek.query
     if search:
-        query = query.filter(
-            Trek.name.ilike(f"%{search}%") | Trek.location.ilike(f"%{search}%")
-        )
+        filter = [Trek.name.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")]
+        if search.isdigit():
+            filter.append(Trek.id == int(search))
+        query = query.filter(db.or_(*filter))
 
     if difficulty:
         query = query.filter_by(difficulty=difficulty)
