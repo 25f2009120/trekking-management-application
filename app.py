@@ -19,22 +19,22 @@ app.register_blueprint(admin)
 app.register_blueprint(user)
 app.register_blueprint(staff)
 
+with app.app_context():
+    db.create_all()
+
+    existing_admin = User.query.filter_by(role="admin").first()
+    if not existing_admin:
+        admin_user = User(
+            name = "Admin",
+            email = "admin@gmail.com",
+            phone = "+919999999999",
+            role = "admin",
+            is_approved = True,
+            is_blacklisted = False
+        )
+        admin_user.password_hash("admin123")
+        db.session.add(admin_user)
+        db.session.commit()
+
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-
-        existing_admin = User.query.filter_by(role="admin").first()
-        if not existing_admin:
-            admin_user = User(
-                name = "Admin",
-                email = "admin@gmail.com",
-                phone = "+919999999999",
-                role = "admin",
-                is_approved = True,
-                is_blacklisted = False
-            )
-            admin_user.password_hash("admin123")
-            db.session.add(admin_user)
-            db.session.commit()
-
     app.run(debug=True)

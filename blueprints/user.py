@@ -18,16 +18,26 @@ def user_dashboard():
 
     total_bookings = len(bookings)
 
-    total_completed = sum(1 for booking in bookings if booking.trek.status == "Completed")
+    total_completed = 0
+
+    for booking in bookings:
+        if booking.trek.status == "Completed":
+            total_completed += 1
 
     today = datetime.today()
 
-    upcoming_bookings = [
-        booking for booking in bookings
-        if booking.trek.status in ("Open", "Closed", "Started") and booking.trek.start_date >= date.today()
-    ]
+    upcoming_bookings = []
 
-    upcoming_bookings.sort(key=lambda booking: booking.trek.start_date)
+    for booking in bookings:
+        upcoming_trek = booking.trek.status in ("Open", "Closed", "Started")
+        trek_not_started = booking.trek.start_date >=  date.today()
+        if upcoming_trek and trek_not_started:
+            upcoming_bookings.append(booking)
+
+    def get_trek_start_date(booking):
+        return booking.trek.start_date
+
+    upcoming_bookings.sort(key=get_trek_start_date)
 
     return render_template("user/dashboard.html", user=user, total_bookings=total_bookings, total_completed=total_completed, upcoming_bookings=upcoming_bookings)
 
@@ -49,9 +59,11 @@ def available_treks():
     query = Trek.query.filter_by(status="Open")
 
     if search:
-        query = query.filter(
-            Trek.name.ilike(f"%{search}%") | Trek.description.ilike(f"%{search}%") | Trek.location.ilike(f"%{search}%")
-        )
+        search_pattern = f"%{search}%"
+        name_match = Trek.name.ilike(search_pattern)
+        description_match = Trek.description.ilike(search_pattern)
+        location_matches = Trek.location.ilike(search_pattern)
+        query = query.filter(db.or_(name_match, description_match, location_matches))
 
     if difficulty:
         query = query.filter_by(difficulty=difficulty)
@@ -61,9 +73,11 @@ def available_treks():
 
     treks = query.order_by(Trek.start_date.asc()).all()
 
-    my_booked_trek_ids = {
-        booking.trek_id for booking in Booking.query.filter_by(user_id=session["user_id"], status="Booked").all()
-    }
+    my_booked_trek_ids = set()
+
+    my_bookings_list = Booking.query.filter_by(user_id=session["user_id"], status="Booked").all()
+    for booking in my_bookings_list:
+        my_booked_trek_ids.add(booking.trek_id)
 
     return render_template(
         "user/treks.html",

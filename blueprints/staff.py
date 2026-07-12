@@ -16,14 +16,31 @@ def staff_dashboard():
     assigned_treks = Trek.query.filter_by(staff_id=user.id).all()
 
     total_treks = len(assigned_treks)
-    total_participants = sum(trek.bookings.filter_by(status="Booked").count() for trek in assigned_treks)
+    total_participants = 0
+    for trek in assigned_treks:
+        total_participants += trek.bookings.filter_by(status="Booked").count()
 
-    pending_treks = sum(1 for t in assigned_treks if t.status == "Pending")
-    approved_treks = sum(1 for t in assigned_treks if t.status == "Approved")
-    open_treks = sum(1 for t in assigned_treks if t.status == "Open")
-    closed_treks = sum(1 for t in assigned_treks if t.status == "Closed")
-    started_treks = sum(1 for t in assigned_treks if t.status == "Started")
-    completed_treks = sum(1 for t in assigned_treks if t.status == "Completed")
+    pending_treks = 0
+    approved_treks = 0
+    open_treks = 0
+    closed_treks = 0
+    started_treks = 0
+    completed_treks = 0
+
+    for t in assigned_treks:
+        if t.status == "Pending":
+            pending_treks += 1
+        elif t.status == "Approved":
+            approved_treks += 1
+        elif t.status == "Open":
+            open_treks += 1
+        elif t.status == "Closed":
+            closed_treks += 1
+        elif t.status == "Started":
+            started_treks += 1
+        elif t.status == "Completed":
+            completed_treks += 1
+
     return render_template(
         "staff/dashboard.html",
         user=user,
@@ -52,18 +69,21 @@ def staff_treks():
     query = Trek.query.filter_by(staff_id=session["user_id"])
 
     if search:
-        filters = [Trek.id.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")]
+        id_match = Trek.id.ilike(f"%{search}%")
+        locations_match = Trek.location.ilike(f"%{search}%")
+
         if search.isdigit():
-            filters.append(Trek.id == int(search))
-        query = query.filter(db.or_(*filters))
+            query = query.filter(db.or_(id_match, locations_match, Trek.id == int(search)))
+        else:
+            query = query.filter(db.or_(id_match, locations_match))
 
     if status:
         query = query.filter_by(status=status)
 
     treks = query.all()
-    participant_counts = {
-        trek.id: trek.bookings.filter_by(status="Booked").count() for trek in treks
-    }
+    participant_counts = {}
+    for trek in treks:
+        participant_counts[trek.id] = trek.bookings.filter_by(status="Booked").count()
 
     return render_template(
         "staff/treks.html",
@@ -99,6 +119,12 @@ def edit_trek(trek_id):
         if new_status not in allowed_next:
             flash(f"You are not allowed to move trek from '{trek.status}' to '{new_status}'")
             return redirect(url_for("staff.staff_treks"))
+
+        available_slots = request.form["available_slots"]
+        if not available_slots.isdigit():
+            flash("Available slots can't be negative")
+            return redirect(url_for("staff.staff_treks"))
+
         trek.status = new_status
         trek.available_slots = request.form["available_slots"]
         db.session.commit()

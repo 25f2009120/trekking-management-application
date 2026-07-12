@@ -72,10 +72,13 @@ def admin_staff():
     query = User.query.filter_by(role="staff")
 
     if search:
-        filter = [User.name.ilike(f"%{search}%"), User.email.ilike(f"%{search}")]
+        name_matches = User.name.ilike(f"%{search}%")
+        email_matches = User.email.ilike(f"%{search}%")
+
         if search.isdigit():
-            filter.append(User.id == int(search))
-        query = query.filter(db.or_(*filter))
+            query = query.filter(db.or_(name_matches, email_matches, User.id == int(search)))
+        else:
+            query = query.filter(db.or_(name_matches, email_matches))
 
     if status == "blacklisted":
         query = query.filter_by(is_blacklisted=True)
@@ -142,10 +145,14 @@ def admin_users():
     query = User.query.filter_by(role="user")
 
     if search:
-        filter = [User.name.ilike(f"%{search}%"), User.email.ilike(f"%{search}%")]
+        name_matches = User.name.ilike(f"%{search}%")
+        email_matches = User.email.ilike(f"%{search}%")
+
         if search.isdigit():
-            filter.append(User.id == int(search))
-        query = query.filter(db.or_(*filter))
+            query = query.filter(db.or_(name_matches, email_matches, User.id == int(search)))
+        else:
+            query = query.filter(db.or_(name_matches, email_matches))
+
     if status == "blacklisted":
         query = query.filter_by(is_blacklisted=True)
     elif status == "unblacklisted":
@@ -207,11 +214,15 @@ def admin_treks():
     status = request.args.get("status", "")
 
     query = Trek.query
+
     if search:
-        filter = [Trek.name.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")]
+        name_matches = Trek.name.ilike(f"%{search}%")
+        location_matches = Trek.location.ilike(f"%{search}%")
+
         if search.isdigit():
-            filter.append(Trek.id == int(search))
-        query = query.filter(db.or_(*filter))
+            query = query.filter(db.or_(name_matches, location_matches, Trek.id == int(search)))
+        else:
+            query = query.filter(db.or_(name_matches, location_matches))
 
     if difficulty:
         query = query.filter_by(difficulty=difficulty)
@@ -245,6 +256,14 @@ def create_trek():
 
         if end_date < start_date:
             flash("End date can't be before start date")
+            return redirect(url_for("admin.create_trek"))
+
+        if not duration.isdigit() or int(duration) <= 0:
+            flash("Duration must be a positive number")
+            return redirect(url_for("admin.create_trek"))
+
+        if not available_slots.isdigit():
+            flash("Available slots can't be negative")
             return redirect(url_for("admin.create_trek"))
 
         image_urls = request.form["image_urls"]
@@ -291,6 +310,18 @@ def edit_trek(trek_id):
         flash("Trek not found")
         return redirect(url_for("admin.admin_treks"))
 
+    if request.method == "POST":
+        duration = request.form["duration"]
+        available_slots = request.form["available_slots"]
+
+        if not duration.isdigit() or int(duration) <= 0:
+            flash("Duration must be a positive number")
+            return redirect(url_for("admin.edit_trek", trek_id=trek_id))
+
+        if not available_slots.isdigit():
+            flash("Available slots can't be negative")
+            return redirect(url_for("admin.edit_trek", trek_id=trek_id))
+
     staff_list = User.query.filter_by(role="staff", is_approved=True, is_blacklisted=False).all()
 
     if request.method == "POST":
@@ -319,7 +350,12 @@ def edit_trek(trek_id):
         flash("Trek edited")
         return redirect(url_for("admin.admin_treks"))
 
-    current_images = ", ".join([image.image_url for image in trek.images])
+    image_url_list = []
+    for image in trek.images:
+        image_url_list.append(image.image_url)
+
+    current_images = ", ".join(image_url_list)
+
     return render_template("admin/edit_trek.html", trek=trek, current_images=current_images, staff_list=staff_list)
 
 @admin.route("/admin/treks/delete/<int:trek_id>", methods=["POST"])

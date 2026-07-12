@@ -8,14 +8,14 @@ html, body {
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f1ec;
+    background-color: #f0f0f0;
     color: #2b2b2b;
     padding: 0;
     margin: 0;
 }
 
 nav {
-    background-color: #2f4f3e;
+    background-color: #32503c;
     padding: 12px 25px;
 }
 
@@ -38,7 +38,7 @@ nav a:hover {
 
 .card {
     background-color: #ffffff;
-    border: 1px solid #ccc;
+    border: 1px solid #c8c8c8;
     border-radius: 6px;
     padding: 20px 25px;
     margin-bottom: 20px;
@@ -46,15 +46,15 @@ nav a:hover {
 }
 
 h1, h2 {
-    color: #2f4f3e;
+    color: #32503c;
 }
 
 p.flash-msg {
-    color: #a10000;
+    color: #960000;
     font-weight: bold;
     padding: 10px 14px;
     background-color: #ffe6e6;
-    border: 1px solid #f5b5b5;
+    border: 1px solid #f0b4b4;
     border-radius: 4px;
     margin-bottom: 15px;
 }
@@ -70,7 +70,7 @@ form input,
 form select,
 form textarea {
     padding: 8px 10px;
-    border: 1px solid #bbb;
+    border: 1px solid #bebebe;
     border-radius: 4px;
     font-size: 14px;
 }
@@ -82,7 +82,7 @@ form textarea {
 
 .form-page {
     background-color: #ffffff;
-    border: 1px solid #ccc;
+    border: 1px solid #c8c8c8;
     border-radius: 8px;
     padding: 30px 35px;
     min-width: 500px;
@@ -92,7 +92,7 @@ form textarea {
 
 .form-page hr {
     border: none;
-    border-top: 1px solid #e0ddd5;
+    border-top: 1px solid #dcdcdc;
     width: 100%;
     margin: 15px 0;
 }
@@ -101,7 +101,7 @@ form textarea {
 .form-page label {
     font-weight: bold;
     font-size: 13px;
-    color: #2f4f3e;
+    color: #32503c;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 4px 0 2px;
@@ -110,7 +110,7 @@ form textarea {
 .form-page .helper-text {
     font-weight: normal;
     text-transform: none;
-    color: #777;
+    color: #787878;
     font-size: 12px;
     letter-spacing: normal;
 }
@@ -119,8 +119,8 @@ form textarea {
 .form-page select:focus,
 .form-page textarea:focus {
     outline: none;
-    border-color: #3f6b4f;
-    box-shadow: 0 0 0 3px rgba(63, 107, 79, 0.15);
+    border-color: #416950;
+    box-shadow: 0 0 0 3px rgb(60 110 80 / 0.2);
 }
 
 .form-page input,
@@ -152,8 +152,8 @@ table form {
 }
 
 button, input[type="submit"] {
-    background-color: #3f6b4f;
-    color: white;
+    background-color: #3c6e50;
+    color: #ffffff;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
@@ -163,39 +163,39 @@ button, input[type="submit"] {
 }
 
 button:hover {
-    background-color: #2f4f3e;
+    background-color: #32503c;
 }
 
 table button {
-    background-color: #b33a3a;
+    background-color: #b43c3c;
     padding: 6px 12px;
     font-size: 13px;
     margin-top: 4px;
 }
 
 table button:hover {
-    background-color: #8f2d2d;
+    background-color: #8c2d2d;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    border: 1px solid #cfcfcf;
+    border: 1px solid #d2d2d2;
 }
 
 th, td {
     text-align: center;
     padding: 10px 12px;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid #dcdcdc;
     font-size: 14px;
     vertical-align: top;
 }
 
 th {
-    background-color: #eef3ee;
-    color: #2f4f3e;
-    border-bottom: 2px solid #b7cdb9;
+    background-color: #f0f0f0;
+    color: #32503c;
+    border-bottom: 2px solid #b4c8be;
 }
 
 tbody th:nth-child(even) {
@@ -254,7 +254,7 @@ a {
 .stat-box h3 {
     margin: 0;
     font-size: 22px;
-    color: #2f4f3e;
+    color: #32503c;
 }
 
 .stat-box p {
